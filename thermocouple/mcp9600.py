@@ -382,16 +382,3 @@ class MCP9600:
         if value & 0x1000:
             temp -= 4096.0
         return temp
-    
-
-if __name__ == "__main__":
-    from automation import Automation2040W
-
-    # TODO check if busio works
-
-    board = Automation2040W()
-
-    t = MCP9600(board.i2c)
-
-    while True:
-        print(t.temperature)
