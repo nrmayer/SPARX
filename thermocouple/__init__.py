@@ -1,1 +1,1 @@
-import mcp9600
+from .mcp9600 import *
