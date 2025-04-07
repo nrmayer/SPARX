@@ -60,7 +60,7 @@ New to qwiic? Take a look at the entire `SparkFun qwiic ecosystem <https://www.s
 
 """
 
-from qwiic import QwiicDriver
+from qwiic_driver import QwiicDriver
 
 #-----------------------------------------------------------------------------
 # Define the device name and I2C addresses. These are set in the class definition
