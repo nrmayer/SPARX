@@ -58,16 +58,52 @@ class Logger:
         # use highest number + 1
         return cls(log_folder+f"log{i+1}.txt")
 
-    def _write(self, text:str) -> None:
+    async def _write(self, text:str, *, ignore_file_lock:bool=False) -> None:
+        """Writes string into log file
+        
+        Parameters
+        ----------
+        text : `str`
+            The text to place into the log file
+        *
+        ignore_file_lock: `bool`
+            Ignore thread lock on file. Should only be used in a loop which awaits _write()
+
+        Returns
+        -------
+        None : `None`
+        """
         try:
-            while self._file_lock: pass
+            # yield while locked
+            while self._file_lock and not ignore_file_lock: await asyncio.sleep(0)
+            
+            # should always be set to True, ignore only skips check and reset
             self._file_lock = True
 
             # open in append mode
             with open(self.filename, "a") as file:
                 file.write(text)
         finally:
-            self._file_lock = False
+            if not ignore_file_lock:
+                self._file_lock = False
+
+    async def _write_mult(self, *text:str) -> None:
+        """Writes multiple pieces of text into the log file
+        
+        Parameters
+        ----------
+        *text : `list[str]`
+            The text to place into the log file
+
+        Returns
+        -------
+        None : `None`
+        """
+        self._file_lock = True
+        for t in text:
+            # ignore_file_lock ensures that lines are written without interruption
+            await self._write(t, ignore_file_lock=True) 
+        self._file_lock = False
 
     def log(self, message:str, type:str="INFO") -> None:
         """Writes `message` to the log file
@@ -89,7 +125,7 @@ class Logger:
         timestamp = round(time.time() - self.timestamp, 4)
 
         # write to file
-        self._write(f"{timestamp}:{type}:{message}\n")
+        asyncio.run(self._write(f"{timestamp}:{type}:{message}\n"))
 
     def info(self, message:str) -> None:
         self.log(message, type="INFO")
@@ -128,7 +164,7 @@ class Logger:
     
 
     def async_log_function(self, seconds:int) -> Callable:
-        """Runs given function every `seconds` seconds
+        """Runs decorated function every `seconds` seconds
         
         Parameters
         ----------
@@ -185,12 +221,13 @@ class Logger:
                         type_, text, tb = sys.exc_info()
                         if tb is None: raise e
 
-                        self._write("Traceback (most recent call last):\n")
-                        self._write("".join(traceback.extract_tb(tb).format()))
-                        self._write(f"{re.findall(r"^<class '(\w*)'>$", str(type_))[0]}: {text}\n")
+                        asyncio.run(self._write_mult(
+                            "Traceback (most recent call last):\n",
+                            "".join(traceback.extract_tb(tb).format()),
+                            f"{re.findall(r"^<class '(\w*)'>$", str(type_))[0]}: {text}\n"
+                        ))
 
                     raise e
-                
             return wrapper
         
         return decorator

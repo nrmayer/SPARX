@@ -20,7 +20,10 @@ def wrap(func:Callable) -> Callable:
     def wrapper(dec: Callable) -> Callable:
         # copy attributes
         dec.__name__ = func.__name__
+        dec.__qualname__ = func.__qualname__
         dec.__doc__ = func.__doc__
         dec.__annotations__ = func.__annotations__
+        dec.__module__ = func.__module__
+        dec.__wrapped__ = func
         return dec
     return wrapper
