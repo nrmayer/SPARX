@@ -24,6 +24,5 @@ def wrap(func:Callable) -> Callable:
         dec.__doc__ = func.__doc__
         dec.__annotations__ = func.__annotations__
         dec.__module__ = func.__module__
-        dec.__wrapped__ = func
         return dec
     return wrapper
