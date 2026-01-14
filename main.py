@@ -1,10 +1,5 @@
 import pins
-import log
 
-log.set_logger(log.Logger.new_file("logs/"))
-logger = log.get_named_logger(__name__)
-
-@logger.log_exception()
 def main() -> None:
     while True:
         if pins.RUN_PIN.state == True:
