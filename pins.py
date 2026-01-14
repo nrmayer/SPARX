@@ -16,7 +16,7 @@ qwiic_driver = QwiicDriver(board.i2c)
 _pump_relay = QwiicRelay(SINGLE_RELAY_DEFUALT_ADDR, qwiic_driver)
 pump = VaccuumPump(_pump_relay, 1)
 
-thermocouple = MCP9600(board.i2c)
+thermocouple = MCP9600(board.i2c, address=0x60)
 
 # Pin class
 class Pin:
