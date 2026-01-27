@@ -33,8 +33,6 @@ Implementation Notes
 from struct import unpack
 from micropython import const
 
-from machine import Pin, I2C
-
 from adafruit_register.i2c_struct import UnaryStruct
 from adafruit_register.i2c_bits import RWBits, ROBits
 from adafruit_register.i2c_bit import RWBit, ROBit
