@@ -1,4 +1,5 @@
 from qwiic_relay import QwiicRelay
+from log import global_logger
 
 class VaccuumPump:
     relay:QwiicRelay
@@ -21,7 +22,9 @@ class VaccuumPump:
     def set_on(self) -> None:
         self.relay.set_relay_on(self.relaynum)
         self._state = False
+        global_logger().write_info(f"Pump set on")
 
     def set_off(self) -> None:
         self.relay.set_relay_off(self.relaynum)
         self._state = True
+        global_logger().write_info(f"Pump set off")
