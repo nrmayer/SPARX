@@ -1,7 +1,7 @@
 """Static definitions for pins and drivers"""
 
 import automation
-from typing import Literal
+# from typing import Literal
 
 from qwiic_driver import QwiicDriver
 from qwiic_relay import QwiicRelay, SINGLE_RELAY_DEFUALT_ADDR
@@ -23,11 +23,12 @@ thermocouple = MCP9600(board.i2c, address=_THERMOCOUPLE_ADDRESS)
 class Pin:
     pin_num:int
 
-    type InputType = Literal["READ"] | Literal["WRITE"]
+    # micropython gets angry about typing
+    # type InputType = Literal["READ"] | Literal["WRITE"]
 
-    pin_type:InputType
+    # pin_type:InputType
 
-    def __init__(self, pin_num:int, type:InputType):
+    def __init__(self, pin_num:int, type): #:InputType):
         self.pin_num = pin_num
         self.pin_type = type
 
