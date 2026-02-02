@@ -1,34 +1,55 @@
+"""Implements `Logger` class, which handles log files
+
+Opens specified file, and tracks its file handler
+
+Formats logs, with log types such as warning or error
+
+Automatically timestamps log entries
+
+Able to create a new log in a folder without overwriting previous logs
+"""
+
 import time
 import os
 import re
 
-FORMAT_STR = "{timestamp} | {type} | {message}"
+_DEFAULT_FORMAT_STR = "{timestamp} | {type} | {message}"
 
-TYPE_STRINGS = {
+_DEFAULT_TYPE_STRINGS = {
     "info": "INFO",
     "warning": "WARN",
     "error": "ERR",
 }
 
 class Logger:
-    filename: str
-    format_str = FORMAT_STR
-    type_strings = TYPE_STRINGS
+    """
+    Opens specified file, and tracks its file handler
+
+    Formats logs, with log types such as warning or error
+
+    Automatically timestamps log entries
+
+    Able to create a new log in a folder without overwriting previous logs
+    """
+
+    _filename: str
+    _format_str = _DEFAULT_FORMAT_STR
+    _type_strings = _DEFAULT_TYPE_STRINGS
     
-    # can't type because micropython doesn't have typing module
-    file_handler = None 
+    # can't type file handler because micropython doesn't have typing module
+    _file_handler = None 
 
     def __init__(self, filename:str):
-        self.filename = filename
-        self.file_handler = open(filename, "w+")
+        self._filename = filename
+        self._file_handler = open(filename, "w+")
 
     def __del__(self):
-        if self.file_handler is not None: 
-            self.file_handler.close()
+        if self._file_handler is not None: 
+            self._file_handler.close()
 
     def _write_file(self, txt:str) -> None:
-        if self.file_handler is None: raise Exception("No `Logger` file handler")
-        self.file_handler.write(txt)
+        if self._file_handler is None: raise Exception("No `Logger` file handler")
+        self._file_handler.write(txt)
 
     @classmethod
     def new_file(cls, log_folder:str) -> "Logger":
@@ -79,26 +100,98 @@ class Logger:
         None : `None`
         """
 
-        self.format_str = string
+        self._format_str = string
 
     def set_type_string(self, key:str, val:str) -> None:
-        self.type_strings[key] = val
+        """Sets the string translation of a log type
+        
+        Parameters
+        ----------
+        key : `str`
+            The log type (e.g. "warning")
+        val : `str`
+            The translated string that is put in the log file (e.g. "WARN")
 
-    def write_log(self, type_:str, message:str, **kwargs) -> None:
+        Returns
+        -------
+        None : `None`
+        """
+
+        self._type_strings[key] = val
+
+    def write_log(self, type_:str, message:str, **kwargs:list[str]) -> None:
+        """Writes an entry to the log file
+        
+        Parameters
+        ----------
+        type_ : `str`
+            Log type (written to beginning of log entry)
+        message : `str`
+            Message to write to log
+        **kwargs : `list[str]`
+            Anything else specified in custom format string
+
+        Returns
+        -------
+        None : `None`
+        """
+
         self._write_file(
-            self.format_str.format(
+            self._format_str.format(
                 timestamp = time.ticks_ms(),
-                type = type_ if type_ not in self.type_strings.keys() else self.type_strings[type_],
+                type = type_ if type_ not in self._type_strings.keys() else self._type_strings[type_],
                 message = message,
                 **kwargs
             )
         )
 
-    def write_info(self, message:str, **kwargs) -> None:
+    def write_info(self, message:str, **kwargs: list[str]) -> None:
+        """Writes a log entry of type "info" to the log file
+        
+        Parameters
+        ----------
+        message : `str`
+            Message to write to log
+        **kwargs : `list[str]`
+            Anything else specified in custom format string
+
+        Returns
+        -------
+        None : `None`
+        """
+
         self.write_log("info", message, **kwargs)
 
-    def write_warning(self, message:str, **kwargs) -> None:
+    def write_warning(self, message:str, **kwargs: list[str]) -> None:
+        """Writes a log entry of type "warning" to the log file
+        
+        Parameters
+        ----------
+        message : `str`
+            Message to write to log
+        **kwargs : `list[str]`
+            Anything else specified in custom format string
+
+        Returns
+        -------
+        None : `None`
+        """
+
         self.write_log("warning", message, **kwargs)
 
-    def write_error(self, message:str, **kwargs) -> None:
+    def write_error(self, message:str, **kwargs: list[str]) -> None:
+        """Writes a log entry of type "error" to the log file
+        
+        Parameters
+        ----------
+        message : `str`
+            Message to write to log
+        **kwargs : `list[str]`
+            Anything else specified in custom format string
+
+        Returns
+        -------
+        None : `None`
+        """
+
         self.write_log("error", message, **kwargs)
