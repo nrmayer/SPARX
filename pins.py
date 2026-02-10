@@ -46,5 +46,23 @@ class Pin:
         else:
             raise Exception("Cannot write to readonly pin!")
 
+class Relay:
+    relay_num:int
+
+    def __init__(self, num:int):
+        self.relay_num = num
+
+    def set_on(self):
+        board.actuate_relay(self.relay_num)
+
+    def set_off(self):
+        board.release_relay(self.relay_num)
+
+    def set(self, state:bool):
+        self.set_on() if state else self.set_off()
+
 # pin definitions
-RUN_PIN = Pin(automation.INPUT_1, "READ")
+run_pin = Pin(automation.INPUT_1, "READ")
+# on relay 1
+valve = Relay(0)
+mosfet = Relay(1)
