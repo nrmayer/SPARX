@@ -1,34 +1,23 @@
-"""Static definitions for pins and drivers"""
+"""Constant definitions for pins and drivers"""
+
+THERMOCOUPLE_ENALED = True
+_THERMOCOUPLE_ADDRESS = 0x60
 
 import automation
-# from typing import Literal
 
-from qwiic_driver import QwiicDriver
-from qwiic_relay import QwiicRelay, SINGLE_RELAY_DEFUALT_ADDR
-from pump import VaccuumPump
-from thermocouple import MCP9600
+if THERMOCOUPLE_ENALED:
+    from thermocouple import MCP9600
 
-# board and drivers
 board = automation.Automation2040W()
-qwiic_driver = QwiicDriver(board.i2c)
 
-# do not use `_pump_relay` outside of pins.py
-_pump_relay = QwiicRelay(SINGLE_RELAY_DEFUALT_ADDR, qwiic_driver)
-pump = VaccuumPump(_pump_relay, 1)
-
-_THERMOCOUPLE_ADDRESS = 0x60
-thermocouple = MCP9600(board.i2c, address=_THERMOCOUPLE_ADDRESS)
+if THERMOCOUPLE_ENALED:
+    thermocouple = MCP9600(board.i2c, address=_THERMOCOUPLE_ADDRESS)
 
 # Pin class
 class Pin:
     pin_num:int
 
-    # micropython gets angry about typing
-    # type InputType = Literal["READ"] | Literal["WRITE"]
-
-    # pin_type:InputType
-
-    def __init__(self, pin_num:int, type): #:InputType):
+    def __init__(self, pin_num:int, type):
         self.pin_num = pin_num
         self.pin_type = type
 
@@ -46,6 +35,7 @@ class Pin:
         else:
             raise Exception("Cannot write to readonly pin!")
 
+# Class handler for Pimoroni builtin relay
 class Relay:
     relay_num:int
 

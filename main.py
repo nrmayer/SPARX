@@ -8,21 +8,14 @@ def main() -> None:
 
     # global_logger().write_info("start main()")
     while True:
-        print(pins.thermocouple.temperature)
+        if pins.THERMOCOUPLE_ENALED:
+            print(pins.thermocouple.temperature)
 
-        running = pins.run_pin.state
+        running = bool(pins.run_pin.state)
         if last == running: continue
 
-        if running:
-            # run loop
-            pins.pump.set_on()
-            pins.valve.set_on()
-            pins.mosfet.set_on()
-        else:
-            # don't
-            pins.pump.set_off()
-            pins.valve.set_off()
-            pins.mosfet.set_off()
+        pins.valve.set(running)
+        pins.mosfet.set(running)
         
         last = running
 
