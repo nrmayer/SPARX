@@ -37,19 +37,14 @@ class Logger:
     _type_strings = _DEFAULT_TYPE_STRINGS
     
     # can't type file handler because micropython doesn't have typing module
-    _file_handler = None 
 
     def __init__(self, filename:str):
         self._filename = filename
-        self._file_handler = open(filename, "w+")
-
-    def __del__(self):
-        if self._file_handler is not None: 
-            self._file_handler.close()
 
     def _write_file(self, txt:str) -> None:
-        if self._file_handler is None: raise Exception("No `Logger` file handler")
-        self._file_handler.write(txt)
+        if self._filename is None: raise Exception("No `Logger` file handler")
+        with open(self._filename, "w+") as file:
+            file.write(txt)
 
     @classmethod
     def new_file(cls, log_folder:str) -> "Logger":
