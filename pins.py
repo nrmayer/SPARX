@@ -1,17 +1,25 @@
 """Constant definitions for pins and drivers"""
 
-THERMOCOUPLE_ENALED = True
-_THERMOCOUPLE_ADDRESS = 0x60
-
 import automation
 
-if THERMOCOUPLE_ENALED:
-    from thermocouple import MCP9600
+#######################################
+#######################################
+
+THERMOCOUPLE_ENALED = True
+THERMOCOUPLE_ADDRESS = 0x60
+
+VALVE_RELAY = 0
+MOSFET_RELAY = 1
+
+RUN_PIN = automation.INPUT_1
+
+#######################################
 
 board = automation.Automation2040W()
 
 if THERMOCOUPLE_ENALED:
-    thermocouple = MCP9600(board.i2c, address=_THERMOCOUPLE_ADDRESS)
+    from thermocouple import MCP9600
+    thermocouple = MCP9600(board.i2c, address=THERMOCOUPLE_ADDRESS)
 
 # Pin class
 class Pin:
@@ -52,7 +60,7 @@ class Relay:
         self.set_on() if state else self.set_off()
 
 # pin definitions
-run_pin = Pin(automation.INPUT_1, "READ")
+run_pin = Pin(RUN_PIN, "READ")
 # on relay 1
-valve = Relay(0)
-mosfet = Relay(1)
+valve = Relay(VALVE_RELAY)
+mosfet = Relay(MOSFET_RELAY)
