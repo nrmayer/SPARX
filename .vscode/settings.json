@@ -12,5 +12,20 @@
     "python.analysis.extraPaths": [
         "~/.micropico-stubs/included"
     ],
-    "micropico.syncFolder": "out"
+    "micropico.syncFolder": "",
+    "micropico.pyIgnore": [
+        "**/.picowgo",
+        "**/.micropico",
+        "**/.vscode",
+        "**/.gitignore",
+        "**/.git",
+        "**/.DS_Store",
+        "**/project.pico-go",
+        "**/env",
+        "**/venv",
+        "**/.venv",
+        "**/.idea",
+        "**/typings"
+    ],
+    "micropico.softResetAfterUpload": true
 }
