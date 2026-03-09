@@ -35,16 +35,18 @@ class Logger:
     _filename: str
     _format_str = _DEFAULT_FORMAT_STR
     _type_strings = _DEFAULT_TYPE_STRINGS
-    
-    # can't type file handler because micropython doesn't have typing module
 
-    def __init__(self, filename:str):
+    _print_log: str
+    
+    def __init__(self, filename:str, print_log:bool=False):
         self._filename = filename
+        self._print_log = print_log
 
     def _write_file(self, txt:str) -> None:
         if self._filename is None: raise Exception("No `Logger` file handler")
-        with open(self._filename, "w+") as file:
+        with open(self._filename, "a") as file:
             file.write(txt)
+        if self._print_log: print(txt)
 
     @classmethod
     def new_file(cls, log_folder:str) -> "Logger":
@@ -67,10 +69,10 @@ class Logger:
         i = 0
         for log in logs:
             # find number in log file name
-            re_match = re.compile("log(\\d*).txt").match(log)
+            re_match = re.compile(r"log(\d*).txt").match(log)
             if re_match is None: continue
 
-            digit:str = re_match.group(0)
+            digit:str = re_match.group(1)
 
             if len(digit) > 0:
                 int_dig = int(digit)

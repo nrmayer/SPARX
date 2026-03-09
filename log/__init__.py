@@ -2,7 +2,7 @@ from .logger import Logger
 
 _GLOBAL_LOGGER = None
 
-def init_global_logger(*, filename:str|None=None, folder:str|None=None) -> None:
+def init_global_logger(*, filename:str|None=None, folder:str|None=None, print_log:bool=False) -> None:
     """Initializes global logger, which can be accessed through `global_logger()`
     Ideally, should only be called once
         
@@ -24,7 +24,7 @@ def init_global_logger(*, filename:str|None=None, folder:str|None=None) -> None:
     if filename is None:
         _GLOBAL_LOGGER = Logger.new_file("logs/" if folder is None else folder)
         return
-    _GLOBAL_LOGGER = Logger(filename)
+    _GLOBAL_LOGGER = Logger(filename, print_log)
 
 def global_logger() -> Logger:
     """Retrieves global logger, which must first be initialized through `init_global_logger()`
